@@ -1,0 +1,209 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ConferenceController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 90%; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    * { box-sizing:border-box; }
+
+/* basic stylings ------------------------------------------ */
+body 				 { background:url(https://scotch.io/wp-content/uploads/2014/07/61.jpg); }
+.container 		{ 
+  font: 18px/1.5 sans-serif;
+  width:600px; 
+  margin:30px auto 0; 
+  display:block; 
+  background:#FFF;
+  padding:10px 50px 50px;
+}
+h2 		 { 
+  text-align:center; 
+  margin-bottom:50px; 
+}
+h2 small { 
+  font-weight:normal; 
+  color:#888; 
+  display:block; 
+}
+.footer 	{ text-align:center; }
+.footer a  { color:#53B2C8; }
+
+/* form starting stylings ------------------------------- */
+.group 			  { 
+  position:relative; 
+  margin-bottom:45px; 
+}
+input 				{
+  font-size:18px;
+  padding:10px 10px 10px 5px;
+  display:block;
+  width:300px;
+  border:none;
+  border-bottom:1px solid #757575;
+}
+input:focus 		{ outline:none; }
+
+/* LABEL ======================================= */
+label 				 {
+  color:#999; 
+  font-size:18px;
+  font-weight:normal;
+  position:absolute;
+  pointer-events:none;
+  left:5px;
+  top:10px;
+  transition:0.2s ease all; 
+  -moz-transition:0.2s ease all; 
+  -webkit-transition:0.2s ease all;
+}
+
+/* active state */
+input:focus ~ label, input:valid ~ label 		{
+  top:-20px;
+  font-size:14px;
+  color:#5264AE;
+}
+
+/* BOTTOM BARS ================================= */
+.bar 	{ position:relative; display:block; width:300px; }
+.bar:before, .bar:after 	{
+  content:'';
+  height:2px; 
+  width:0;
+  bottom:1px; 
+  position:absolute;
+  background:#5264AE; 
+  transition:0.2s ease all; 
+  -moz-transition:0.2s ease all; 
+  -webkit-transition:0.2s ease all;
+}
+.bar:before {
+  left:50%;
+}
+.bar:after {
+  right:50%; 
+}
+
+/* active state */
+input:focus ~ .bar:before, input:focus ~ .bar:after {
+  width:50%;
+}
+
+/* HIGHLIGHTER ================================== */
+.highlight {
+  position:absolute;
+  height:60%; 
+  width:100px; 
+  top:25%; 
+  left:0;
+  pointer-events:none;
+  opacity:0.5;
+}
+
+/* active state */
+input:focus ~ .highlight {
+  -webkit-animation:inputHighlighter 0.3s ease;
+  -moz-animation:inputHighlighter 0.3s ease;
+  animation:inputHighlighter 0.3s ease;
+}
+
+/* ANIMATIONS ================ */
+@-webkit-keyframes inputHighlighter {
+	from { background:#5264AE; }
+  to 	{ width:0; background:transparent; }
+}
+@-moz-keyframes inputHighlighter {
+	from { background:#5264AE; }
+  to 	{ width:0; background:transparent; }
+}
+@keyframes inputHighlighter {
+	from { background:#5264AE; }
+  to 	{ width:0; background:transparent; }
+}
+
+.inputtext{
+margin-left:-60px;
+}
+</style>
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+<p>Please enter the Account ID you'd like to display:</p>
+
+<div class="container inputtext">
+  <form>
+    <div class="group">      
+      <input type="text" id="text-accountId">
+      <span class="highlight"></span>
+      <span class="bar"></span>
+      <label>Account ID</label>
+    </div>
+  </form>
+  <button type="button" class="btn btn-success" id="btn-getdata">GET DATA</button>
+  <button type="button" class="btn btn-success" id="btn-showall">SHOW ALL</button>
+</div>
+
+<p>Aggreate performance for All <strong>ACTIVE</strong> accounts is listed below:</p>
+{% if Accounts %}
+<table class="table" id="articles">
+  <thead>
+    <tr>
+      <th scope="col">Account Name</th>
+      <th scope="col">Account ID</th>
+      <th scope="col">Spend</th>
+      <th scope="col">Clicks</th>
+      <th scope="col">Impressions</th>
+      <th scope="col">Cost per Click</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for account  in Accounts %}
+    <tr>
+      <th scope="row">{{account.accountName}}</th>
+      <td>{{account.accountId}}</td>
+      {% if account.Metrics %}
+      {% set count = 0 %}
+      {% for metrica  in account.Metrics %}
+         {% if metrica._id == account.accountId %}
+         {%  if metrica.totalSpend %}
+         {% set count = count + 1 %}
+          <td>{{ metrica.totalSpend }}</td> 
+        {% endif %}
+         {%  if metrica.totalClick %}
+         {% set count = count + 1 %}
+          <td>{{ metrica.totalClick }}</td> 
+        {% endif %}
+         {%  if metrica.totalImpressions %}
+         {% set count = count + 1 %}
+          <td>{{ metrica.totalImpressions }}</td> 
+        {% endif %}
+        {%  if metrica.costPerClick %}
+         {% set count = count + 1 %}
+          <td>{{ metrica.costPerClick }}</td> 
+        {% endif %}
+         {% endif  %}
+      {% endfor %}
+      {% for i in count..3 %}
+      {% if count == 4 %}
+      {% else %}
+      <td> 0  </td>
+      {% endif %}
+      {% endfor %}
+      {% else %}
+        {% for i in 0..3 %}
+      <td> 0 </td>
+      {% endfor %}
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No data available for the suplied Account Id.</p>
+{% endif %}
+</div>
+{% endblock %}
+{% block javascripts %}
+<script src="/js/main.js"></script>
+{% endblock %}
